@@ -5,7 +5,11 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6320F3D0-2651-491B-AD75-8B1EC8755F1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocktailAudio.API", "src\CocktailAudio.API\CocktailAudio.API.csproj", "{87A910F8-7511-41DE-BA33-91036FB45BAD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{F3F68916-4927-4DEB-BA34-94E3B9BFD255}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocktailAudio.API.Test", "test\CocktailAudio.API.Test\CocktailAudio.API.Test.csproj", "{92FBBA93-1867-4A46-9BC1-454C1C33ACAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocktailAudio.NET45", "src\CocktailAudio.NET45\CocktailAudio.NET45.csproj", "{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,15 +17,20 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{87A910F8-7511-41DE-BA33-91036FB45BAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{87A910F8-7511-41DE-BA33-91036FB45BAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{87A910F8-7511-41DE-BA33-91036FB45BAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{87A910F8-7511-41DE-BA33-91036FB45BAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92FBBA93-1867-4A46-9BC1-454C1C33ACAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92FBBA93-1867-4A46-9BC1-454C1C33ACAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92FBBA93-1867-4A46-9BC1-454C1C33ACAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92FBBA93-1867-4A46-9BC1-454C1C33ACAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{87A910F8-7511-41DE-BA33-91036FB45BAD} = {6320F3D0-2651-491B-AD75-8B1EC8755F1B}
+		{92FBBA93-1867-4A46-9BC1-454C1C33ACAD} = {F3F68916-4927-4DEB-BA34-94E3B9BFD255}
+		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9} = {6320F3D0-2651-491B-AD75-8B1EC8755F1B}
 	EndGlobalSection
 EndGlobal
