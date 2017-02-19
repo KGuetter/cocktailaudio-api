@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,26 @@ namespace CocktailAudio.API
         public string Name
         {
             get { return _name; }
+        }
+
+        /// <summary>
+        /// Returns the Url where the image can be fetched
+        /// </summary>
+        public Uri Image
+        {
+            get
+            {
+                return _db.MakeUri(string.Format(@"ArtistArt\{0:D2}\[{1:D4}] {2}\folder.jpg",
+                    _rowid % 100, _rowid, _name));
+            }
+        }
+
+        /// <summary>
+        /// Returns all albums containing at least one track from this artist
+        /// </summary>
+        public IEnumerable<Album> Albums
+        {
+            get { return _db.QueryAlbums(string.Format("ROWID IN (SELECT AlbumID FROM Song WHERE ArtistID={0})", _rowid)); }
         }
 
         public override string ToString()

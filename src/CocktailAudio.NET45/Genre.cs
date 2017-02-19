@@ -30,6 +30,18 @@ namespace CocktailAudio.API
             get { return _name; }
         }
 
+        /// <summary>
+        /// Returns the Url where the image can be fetched
+        /// </summary>
+        public Uri Image
+        {
+            get
+            {
+                return _db.MakeUri(string.Format(@"GenreArt\{0:D2}\[{1:D4}] {2}\folder.jpg",
+                    _rowid % 100, _rowid, _name));
+            }
+        }
+
         public override string ToString()
         {
             return Name;

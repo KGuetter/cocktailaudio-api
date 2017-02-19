@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,6 +29,18 @@ namespace CocktailAudio.API
         public string Name
         {
             get { return _name; }
+        }
+
+        /// <summary>
+        /// Returns the Url where the image can be fetched
+        /// </summary>
+        public Uri Image
+        {
+            get
+            {
+                return _db.MakeUri(string.Format(@"[{0:D4}] {1}\folder.jpg",
+                    _rowid, _name));
+            }
         }
 
 
@@ -59,9 +72,9 @@ namespace CocktailAudio.API
         /// Returns the album's tracks
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Track> GetTracks
+        public IEnumerable<Track> Tracks
         {
-            get { yield break; }
+            get { return _db.QueryTracks(string.Format("AlbumID={0}", _rowid)); }
         }
 
 

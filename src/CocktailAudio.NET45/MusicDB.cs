@@ -133,15 +133,55 @@ namespace CocktailAudio.API
         }
 
         /// <summary>
-        /// Returns all <see cref="Album"/>s filtered by the specified conditions
+        /// Returns all <see cref="Album"/>s filtered by the specified condition
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<Album> QueryAlbums(/* condition*/)
+        internal IEnumerable<Album> QueryAlbums(string condition)
         {
-            yield break;
+            using (var connection = new SQLiteConnection(_connectionString, true))
+            {
+                connection.Open();
+                using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Album WHERE " + condition, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            yield return new Album(this, reader.GetInt64(0), reader.GetString(1));
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns all <see cref="Track"/>s filtered by the specified condition
+        /// </summary>
+        /// <returns></returns>
+        internal IEnumerable<Track> QueryTracks(string condition)
+        {
+            using (var connection = new SQLiteConnection(_connectionString, true))
+            {
+                connection.Open();
+                using (var command = new SQLiteCommand("SELECT ROWID, Name, GenreID, ArtistID FROM Song WHERE " + condition + " ORDER BY Track", connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            yield return new Track(this, reader.GetInt64(0), reader.GetString(1), reader.GetInt64(2), reader.GetInt64(3));
+                        }
+                    }
+                }
+            }
         }
 
         #region Private implementation
+
+        internal Uri MakeUri(string relativePath)
+        {
+            return new Uri(Path.Combine(Path.GetDirectoryName(_databasePath), relativePath));
+        }
 
         private void InvalidatedCacheIfModified()
         {

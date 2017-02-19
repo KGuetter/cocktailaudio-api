@@ -54,5 +54,36 @@ namespace CocktailAudio.API.Test
 
             Assert.That(composers, Is.Not.Empty);
         }
+
+        [Test]
+        public void VerifyAlbumsOfArtist()
+        {
+            if (TestDevice == null)
+                Assert.Inconclusive("No CocktailAudio device found on network");
+
+            var sut = TestDevice.MusicDB;
+
+            var artist = sut.Artists.First();
+
+            var albums = artist.Albums.ToArray();
+
+            Assert.That(albums, Is.Not.Empty);
+        }
+
+        [Test]
+        public void VerifyTracksOfAlbums()
+        {
+            if (TestDevice == null)
+                Assert.Inconclusive("No CocktailAudio device found on network");
+
+            var sut = TestDevice.MusicDB;
+
+            var artist = sut.Artists.First();
+            var album = artist.Albums.First();
+
+            var tracks = album.Tracks;
+
+            Assert.That(tracks, Is.Not.Empty);
+        }
     }
 }
