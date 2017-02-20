@@ -34,13 +34,27 @@ namespace CocktailAudio.API
         /// <summary>
         /// Returns the Url where the image can be fetched
         /// </summary>
-        public Uri Image
+        public Uri GetImageUri(ImageSize size)
         {
-            get
+            string fileName;
+            switch (size)
             {
-                return _db.MakeUri(string.Format(@"ArtistArt\{0:D2}\[{1:D4}] {2}\folder.jpg",
-                    _rowid % 100, _rowid, _name));
+                case ImageSize.Small:
+                    fileName = "folder_s.jpg";
+                    break;
+                case ImageSize.A:
+                    fileName = "folder_a.jpg";
+                    break;
+                case ImageSize.Medium:
+                    fileName = "folder_m.jpg";
+                    break;
+                case ImageSize.Large:
+                default:
+                    fileName = "folder.jpg";
+                    break;
             }
+            return _db.MakeUri(string.Format(@"ArtistArt\{0:D2}\[{1:D4}] {2}\{3}",
+                _rowid % 100, _rowid, _name, fileName));
         }
 
         /// <summary>

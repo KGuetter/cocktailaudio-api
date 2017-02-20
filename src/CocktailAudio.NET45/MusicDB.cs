@@ -17,9 +17,10 @@ namespace CocktailAudio.API
         private readonly string _databasePath;
         private readonly string _connectionString;
         private DateTime _lastModified;
-        private Genre[] _genres;
-        private Artist[] _artists;
-        private Composer[] _composers;
+        private Dictionary<long, Genre> _genres;
+        private Dictionary<long, Artist> _artists;
+        private Dictionary<long, Composer> _composers;
+        private Dictionary<long, Artist[]> _genreArtists;
         #endregion
 
         /// <summary>
@@ -46,27 +47,8 @@ namespace CocktailAudio.API
         {
             get
             {
-                InvalidatedCacheIfModified();
-                if (_genres == null)
-                {
-                    var genres = new List<Genre>();
-                    using (var connection = new SQLiteConnection(_connectionString, true))
-                    {
-                        connection.Open();
-                        using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Genre", connection))
-                        {
-                            using (var reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    genres.Add(new Genre(this, reader.GetInt64(0), reader.GetString(1)));
-                                }
-                            }
-                        }
-                    }
-                    _genres = genres.ToArray();
-                }
-                return _genres;
+                EnsureGenresLoaded();
+                return _genres.Values;
             }
         }
 
@@ -77,27 +59,8 @@ namespace CocktailAudio.API
         {
             get
             {
-                InvalidatedCacheIfModified();
-                if (_artists == null)
-                {
-                    var artists = new List<Artist>();
-                    using (var connection = new SQLiteConnection(_connectionString, true))
-                    {
-                        connection.Open();
-                        using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Artist", connection))
-                        {
-                            using (var reader = command.ExecuteReader())
-                            {
-                                while (reader.Read())
-                                {
-                                    artists.Add(new Artist(this, reader.GetInt64(0), reader.GetString(1)));
-                                }
-                            }
-                        }
-                    }
-                    _artists = artists.ToArray();
-                }
-                return _artists;
+                EnsureArtistsLoaded();
+                return _artists.Values;
             }
         }
 
@@ -108,28 +71,61 @@ namespace CocktailAudio.API
         {
             get
             {
-                InvalidatedCacheIfModified();
-                if (_composers == null)
+                EnsureComposersLoaded();
+                return _composers.Values;
+            }
+        }
+
+        #region Helpers for data classes
+
+        internal Genre GetGenre(long rowid)
+        {
+            EnsureGenresLoaded();
+            return _genres[rowid];
+        }
+
+        internal Artist GetArtist(long rowid)
+        {
+            EnsureArtistsLoaded();
+            return _artists[rowid];
+        }
+
+        internal Composer GetComposer(long rowid)
+        {
+            EnsureComposersLoaded();
+            return _composers[rowid];
+        }
+
+        /// <summary>
+        /// Returns all <see cref="Artist"/>s related to a genre
+        /// </summary>
+        /// <returns></returns>
+        internal IEnumerable<Artist> QueryGenreArtists(long genreId)
+        {
+            if (_genreArtists == null)
+                _genreArtists = new Dictionary<long, Artist[]>();
+            Artist[] artists;
+            if (!_genreArtists.TryGetValue(genreId, out artists))
+            {
+                var list = new List<Artist>();
+                using (var connection = new SQLiteConnection(_connectionString, true))
                 {
-                    var composers = new List<Composer>();
-                    using (var connection = new SQLiteConnection(_connectionString, true))
+                    connection.Open();
+                    using (var command = new SQLiteCommand("SELECT DISTINCT ArtistID FROM Song WHERE GenreID=" + genreId, connection))
                     {
-                        connection.Open();
-                        using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Composer", connection))
+                        using (var reader = command.ExecuteReader())
                         {
-                            using (var reader = command.ExecuteReader())
+                            while (reader.Read())
                             {
-                                while (reader.Read())
-                                {
-                                    composers.Add(new Composer(this, reader.GetInt64(0), reader.GetString(1)));
-                                }
+                                list.Add(GetArtist(reader.GetInt64(0)));
                             }
                         }
                     }
-                    _composers = composers.ToArray();
                 }
-                return _composers;
+                artists = list.ToArray();
+                _genreArtists.Add(genreId, artists);
             }
+            return artists;
         }
 
         /// <summary>
@@ -163,25 +159,31 @@ namespace CocktailAudio.API
             using (var connection = new SQLiteConnection(_connectionString, true))
             {
                 connection.Open();
-                using (var command = new SQLiteCommand("SELECT ROWID, Name, GenreID, ArtistID FROM Song WHERE " + condition + " ORDER BY Track", connection))
+                using (var command = new SQLiteCommand("SELECT ROWID, Track, Name, GenreID, ArtistID, nov_Time FROM Song WHERE " + condition + " ORDER BY Track", connection))
                 {
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            yield return new Track(this, reader.GetInt64(0), reader.GetString(1), reader.GetInt64(2), reader.GetInt64(3));
+                            yield return new Track(this, reader.GetInt64(0), 
+                                reader.GetInt32(1), reader.GetString(2), reader.GetInt64(3), reader.GetInt64(4), TimeSpan.FromSeconds(reader.GetInt32(5)));
                         }
                     }
                 }
             }
         }
 
-        #region Private implementation
-
         internal Uri MakeUri(string relativePath)
         {
-            return new Uri(Path.Combine(Path.GetDirectoryName(_databasePath), relativePath));
+            var path = Path.Combine(Path.GetDirectoryName(_databasePath), relativePath);
+            if (File.Exists(path))
+                return new Uri(path);
+            return null;
         }
+
+        #endregion
+
+        #region Private implementation
 
         private void InvalidatedCacheIfModified()
         {
@@ -191,7 +193,82 @@ namespace CocktailAudio.API
                 _genres = null;
                 _artists = null;
                 _composers = null;
+                _genreArtists = null;
                 _lastModified = lastModified;
+            }
+        }
+
+
+        private void EnsureGenresLoaded()
+        {
+            InvalidatedCacheIfModified();
+            if (_genres == null)
+            {
+                _genres = new Dictionary<long, Genre>();
+                using (var connection = new SQLiteConnection(_connectionString, true))
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Genre", connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var rowid = reader.GetInt64(0);
+                                _genres.Add(rowid, new Genre(this, rowid, reader.GetString(1)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void EnsureArtistsLoaded()
+        {
+            InvalidatedCacheIfModified();
+            if (_artists == null)
+            {
+                _artists = new Dictionary<long, Artist>();
+                using (var connection = new SQLiteConnection(_connectionString, true))
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Artist", connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var rowid = reader.GetInt64(0);
+                                _artists.Add(rowid, new Artist(this, rowid, reader.GetString(1)));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void EnsureComposersLoaded()
+        {
+            InvalidatedCacheIfModified();
+            if (_composers == null)
+            {
+                _composers = new Dictionary<long, Composer>();
+                using (var connection = new SQLiteConnection(_connectionString, true))
+                {
+                    connection.Open();
+                    using (var command = new SQLiteCommand("SELECT ROWID, Name FROM Composer", connection))
+                    {
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                var rowid = reader.GetInt64(0);
+                                _composers.Add(rowid, new Composer(this, rowid, reader.GetString(1)));
+                            }
+                        }
+                    }
+                }
             }
         }
         #endregion

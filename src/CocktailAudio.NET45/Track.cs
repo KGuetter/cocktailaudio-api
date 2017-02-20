@@ -13,17 +13,29 @@ namespace CocktailAudio.API
     {
         private readonly MusicDB _db;
         private readonly long _rowid;
+        private readonly int _trackNumber;
         private readonly string _name;
         private readonly long _genreId;
         private readonly long _artistId;
+        private readonly TimeSpan _duration;
 
-        internal Track(MusicDB db, long rowid, string name, long genreId, long artistId)
+        internal Track(MusicDB db, long rowid, int trackNumber, string name, long genreId, long artistId, TimeSpan duration)
         {
             _db = db;
             _rowid = rowid;
+            _trackNumber = trackNumber;
             _name = name;
             _genreId = genreId;
             _artistId = artistId;
+            _duration = duration;
+        }
+
+        /// <summary>
+        /// Returns the track number on the album
+        /// </summary>
+        public int TrackNumber
+        {
+            get { return _trackNumber; }
         }
 
         /// <summary>
@@ -36,12 +48,17 @@ namespace CocktailAudio.API
 
         public Genre Genre
         {
-            get { return _db.Genres.First(_ => _.Rowid == _genreId); }
+            get { return _db.GetGenre(_genreId); }
         }
 
         public Artist Artist
         {
-            get { return _db.Artists.First(_ => _.Rowid == _artistId); }
+            get { return _db.GetArtist(_artistId); }
+        }
+
+        public TimeSpan Duration
+        {
+            get { return _duration; }
         }
 
         public override string ToString()

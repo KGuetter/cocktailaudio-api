@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocktailAudio.API.Test", "t
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CocktailAudio.NET45", "src\CocktailAudio.NET45\CocktailAudio.NET45.csproj", "{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{C8A7EAB8-5950-4B6D-902A-5B7CF1338A93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoWPF", "demo\DemoWPF\DemoWPF.csproj", "{4E145AA6-3DC4-45A2-883E-658B8DE6AF42}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +29,10 @@ Global
 		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E145AA6-3DC4-45A2-883E-658B8DE6AF42}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E145AA6-3DC4-45A2-883E-658B8DE6AF42}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E145AA6-3DC4-45A2-883E-658B8DE6AF42}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E145AA6-3DC4-45A2-883E-658B8DE6AF42}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -32,5 +40,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{92FBBA93-1867-4A46-9BC1-454C1C33ACAD} = {F3F68916-4927-4DEB-BA34-94E3B9BFD255}
 		{9712EBB9-D941-41DD-8B4A-6E63FCF490A9} = {6320F3D0-2651-491B-AD75-8B1EC8755F1B}
+		{4E145AA6-3DC4-45A2-883E-658B8DE6AF42} = {C8A7EAB8-5950-4B6D-902A-5B7CF1338A93}
 	EndGlobalSection
 EndGlobal
